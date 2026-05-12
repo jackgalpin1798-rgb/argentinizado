@@ -3,13 +3,14 @@ import SceneSelect from './components/SceneSelect'
 import ConversationScene from './components/ConversationScene'
 import Debrief from './components/Debrief'
 import HUD from './components/HUD'
+import SplashScreen from './components/SplashScreen'
 import { SCENES } from './data/scenes'
 import { useGameStore } from './store/gameStore'
 
-const VIEW = { SELECT: 'select', SCENE: 'scene', DEBRIEF: 'debrief' }
+const VIEW = { SPLASH: 'splash', SELECT: 'select', SCENE: 'scene', DEBRIEF: 'debrief' }
 
 export default function App() {
-  const [view, setView] = useState(VIEW.SELECT)
+  const [view, setView] = useState(VIEW.SPLASH)
   const [activeSceneId, setActiveSceneId] = useState(null)
   const [conversationHistory, setConversationHistory] = useState([])
   const [difficulty, setDifficulty] = useState('intermediate')
@@ -41,6 +42,9 @@ export default function App() {
 
   return (
     <>
+      {view === VIEW.SPLASH && (
+        <SplashScreen onEnter={() => setView(VIEW.SELECT)} />
+      )}
       {view === VIEW.SELECT && (
         <>
           <HUD xp={xp} streak={streak} />
