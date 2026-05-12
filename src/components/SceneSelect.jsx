@@ -4,9 +4,9 @@ import { getLevel } from '../store/gameStore'
 import './SceneSelect.css'
 
 const DIFFICULTIES = [
-  { id: 'easy', label: 'Easy', desc: 'Patient & helpful' },
-  { id: 'intermediate', label: 'Intermediate', desc: 'Natural flow' },
-  { id: 'advanced', label: 'Advanced', desc: 'No mercy' },
+  { id: 'easy',         label: 'Easy',         desc: 'Patient & helpful' },
+  { id: 'intermediate', label: 'Intermediate',  desc: 'Natural flow'     },
+  { id: 'advanced',     label: 'Advanced',      desc: 'No mercy'         },
 ]
 
 export default function SceneSelect({ xp, streak, onSelect, difficulty, onDifficulty }) {
@@ -14,23 +14,22 @@ export default function SceneSelect({ xp, streak, onSelect, difficulty, onDiffic
 
   return (
     <div className="scene-select">
-      <div className="scene-select-hero">
-        <div className="hero-flag">🇦🇷</div>
-        <h1 className="hero-title">Argentinizado</h1>
-        <p className="hero-sub">Learn Argentine Castellano through real conversations</p>
-        <div className="hero-badge">{level.name} · {xp} XP{streak > 0 ? ` · 🔥${streak}` : ''}</div>
+
+      <div className="ss-topbar">
+        <h1 className="ss-wordmark">Argentinizado</h1>
+        <div className="ss-meta">
+          {level.name} · {xp} XP{streak > 0 ? ` · ${streak} streak` : ''}
+        </div>
       </div>
 
-      <div className="difficulty-bar">
-        <span className="diff-label">Difficulty</span>
+      <div className="ss-tabs">
         {DIFFICULTIES.map(d => (
           <button
             key={d.id}
-            className={`diff-btn ${difficulty === d.id ? 'diff-active' : ''}`}
+            className={`ss-tab ${difficulty === d.id ? 'ss-tab-active' : ''}`}
             onClick={() => onDifficulty(d.id)}
           >
             {d.label}
-            <span className="diff-desc">{d.desc}</span>
           </button>
         ))}
       </div>
@@ -47,8 +46,10 @@ export default function SceneSelect({ xp, streak, onSelect, difficulty, onDiffic
               style={{ '--accent': scene.accentColor }}
             >
               <div className="scene-card-bg" style={{ background: scene.bgGradient }} />
+              {scene.bgPhoto && (
+                <div className="scene-card-photo" style={{ backgroundImage: `url(${scene.bgPhoto})` }} />
+              )}
               <div className="scene-card-glow" style={{ background: scene.accentColor }} />
-              <div className="scene-card-avatar">{scene.character.avatar}</div>
               <div className="scene-card-info">
                 <div className="scene-card-name">{scene.name}</div>
                 <div className="scene-card-sub">{scene.subtitle}</div>

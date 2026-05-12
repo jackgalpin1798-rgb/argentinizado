@@ -55,7 +55,7 @@
   pointer-events: none;
 }
 
-/* ── Cinematic intro (Monumental only) ─────────── */
+/* ── Cinematic intro ────────────────────────────── */
 .cinematic-overlay {
   position: absolute;
   inset: 0;
@@ -75,8 +75,7 @@
   color: rgba(255,255,255,0.45);
   text-transform: uppercase;
   opacity: 0;
-  animation: cin-fade 0.8s ease forwards;
-  animation-delay: 0.5s;
+  animation: cin-fade 0.8s ease forwards 0.5s;
 }
 
 .cin-stadium {
@@ -88,8 +87,7 @@
   line-height: 1;
   margin-top: 10px;
   opacity: 0;
-  animation: cin-slam 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
-  animation-delay: 1.2s;
+  animation: cin-slam 0.6s cubic-bezier(0.22,1,0.36,1) forwards 1.2s;
 }
 
 .cin-subtitle {
@@ -99,8 +97,7 @@
   text-transform: uppercase;
   margin-top: 14px;
   opacity: 0;
-  animation: cin-fade 0.8s ease forwards;
-  animation-delay: 2s;
+  animation: cin-fade 0.8s ease forwards 2s;
 }
 
 .cin-char {
@@ -110,22 +107,11 @@
   gap: 3px;
   margin-top: 32px;
   opacity: 0;
-  animation: cin-fade 0.8s ease forwards;
-  animation-delay: 2.6s;
+  animation: cin-fade 0.8s ease forwards 2.6s;
 }
 
-.cin-char-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.cin-char-role {
-  font-size: 11px;
-  color: rgba(255,255,255,0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
+.cin-char-name { font-size: 20px; font-weight: 700; color: #fff; }
+.cin-char-role { font-size: 11px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.1em; }
 
 .cin-enter-btn {
   margin-top: 40px;
@@ -139,28 +125,15 @@
   letter-spacing: 0.15em;
   cursor: pointer;
   opacity: 0;
-  animation: cin-fade 0.8s ease forwards, tap-pulse 2.2s ease-in-out 3.8s infinite;
-  animation-delay: 3.4s, 3.8s;
-  box-shadow: 0 0 0 0 rgba(232,5,42,0.5);
+  animation: cin-fade 0.8s ease forwards 3.4s;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.cin-enter-btn:hover { transform: scale(1.06); box-shadow: 0 8px 40px rgba(232,5,42,0.6); }
 
-.cin-enter-btn:hover {
-  transform: scale(1.06);
-  box-shadow: 0 8px 40px rgba(232,5,42,0.6);
-}
+@keyframes cin-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cin-slam { from { opacity: 0; transform: scale(1.18); } to { opacity: 1; transform: scale(1); } }
 
-@keyframes cin-fade {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes cin-slam {
-  from { opacity: 0; transform: scale(1.18); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-/* ── Tap to start overlay ───────────────────────── */
+/* ── Start overlay ──────────────────────────────── */
 .start-overlay {
   position: absolute;
   inset: 0;
@@ -184,38 +157,9 @@
   line-height: 1;
 }
 
-.start-location {
-  font-size: 13px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.start-char-avatar {
-  font-size: 100px;
-  line-height: 1;
-  filter: drop-shadow(0 8px 32px rgba(0,0,0,0.7));
-  animation: start-float 3s ease-in-out infinite;
-}
-
-@keyframes start-float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50%       { transform: translateY(-10px) scale(1.04); }
-}
-
-.start-char-name {
-  font-size: 24px;
-  font-weight: 700;
-  color: #fff;
-  margin-top: 12px;
-}
-
-.start-char-role {
-  font-size: 13px;
-  color: rgba(255,255,255,0.6);
-  margin-bottom: 24px;
-}
+.start-location { font-size: 13px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+.start-char-name { font-size: 24px; font-weight: 700; color: #fff; margin-top: 12px; }
+.start-char-role { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
 
 .start-tap-btn {
   background: var(--accent);
@@ -225,13 +169,6 @@
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.4), 0 0 0 0 var(--accent);
-  animation: tap-pulse 2.2s ease-in-out infinite;
-}
-
-@keyframes tap-pulse {
-  0%, 100% { box-shadow: 0 4px 30px rgba(0,0,0,0.4), 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent); }
-  50%       { box-shadow: 0 4px 30px rgba(0,0,0,0.4), 0 0 0 14px transparent; }
 }
 
 /* ── Header ─────────────────────────────────────── */
@@ -258,42 +195,31 @@
 }
 .btn-back:hover { background: rgba(255,255,255,0.15); }
 
-.scene-title-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-}
-.scene-char-name {
-  font-size: 15px;
-  font-weight: 700;
-}
-.scene-location {
-  font-size: 10px;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.scene-turns {
-  font-size: 13px;
-  color: var(--gold);
-  font-weight: 600;
-  background: rgba(246,201,14,0.1);
-  padding: 4px 10px;
-  border-radius: 12px;
-}
+.scene-title-block { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.scene-char-name { font-size: 15px; font-weight: 700; }
+.scene-location { font-size: 10px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.scene-turns { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 500; letter-spacing: 0.04em; }
 
-/* ── Survival bar ────────────────────────────────── */
-.survival-bar-wrap {
+/* ── Survival dots ───────────────────────────────── */
+.survival-dots {
   position: relative;
   z-index: 10;
-  height: 3px;
-  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0 4px;
 }
-.survival-bar {
-  height: 100%;
-  transition: width 0.5s ease, background 0.5s ease;
+
+.survival-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transition: background 0.4s ease, opacity 0.4s ease;
 }
+
+.survival-dot-alive { background: rgba(255,255,255,0.5); }
+.survival-dot-lost  { background: rgba(248,113,113,0.4); opacity: 0.4; }
 
 /* ── Character stage ─────────────────────────────── */
 .character-stage {
@@ -325,63 +251,19 @@
   justify-content: center;
 }
 
-.char-emoji {
-  font-size: 86px;
-  line-height: 1;
-  filter: drop-shadow(0 6px 24px rgba(0,0,0,0.6));
-  transition: transform 0.2s ease;
-}
-
-.portrait-svg {
-  width: 150px;
-  height: 178px;
-  filter: drop-shadow(0 8px 32px rgba(0,0,0,0.7));
-  transition: transform 0.2s ease;
-}
-
-.portrait-svg.portrait-speaking {
-  animation: char-talk 0.45s ease-in-out infinite alternate;
-}
-
-.char-figure.char-speaking .char-emoji {
-  animation: char-talk 0.45s ease-in-out infinite alternate;
-}
+.char-figure.char-speaking { animation: char-talk 0.45s ease-in-out infinite alternate; }
 
 @keyframes char-talk {
   from { transform: translateY(0) scale(1); }
   to   { transform: translateY(-5px) scale(1.06); }
 }
 
-.char-label {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-}
-.char-label-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-}
-.char-label-role {
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
+.char-label { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.char-label-name { font-size: 16px; font-weight: 700; color: #fff; }
+.char-label-role { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
 
 /* ── Sound wave ─────────────────────────────────── */
-.sound-wave {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  height: 28px;
-  position: relative;
-  z-index: 2;
-}
-
+.sound-wave { display: flex; align-items: center; gap: 3px; height: 28px; position: relative; z-index: 2; }
 .wave-bar {
   width: 3px;
   border-radius: 2px;
@@ -389,11 +271,7 @@
   animation: wave-anim 0.7s ease-in-out infinite alternate;
   animation-delay: var(--delay, 0s);
 }
-
-@keyframes wave-anim {
-  from { height: 4px; opacity: 0.4; }
-  to   { height: 22px; opacity: 1; }
-}
+@keyframes wave-anim { from { height: 4px; opacity: 0.4; } to { height: 22px; opacity: 1; } }
 
 /* ── Messages ────────────────────────────────────── */
 .messages-wrap {
@@ -432,10 +310,8 @@
 .bubble-char { align-self: flex-start; }
 .bubble-user { align-self: flex-end; flex-direction: row-reverse; }
 
-.bubble-avatar { font-size: 22px; flex-shrink: 0; }
-
 .bubble-text {
-  max-width: 72%;
+  max-width: 82%;
   padding: 10px 14px;
   border-radius: 16px;
   font-size: 14px;
@@ -444,10 +320,10 @@
 }
 
 .bubble-char .bubble-text {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(10,10,14,0.88);
+  border: 1px solid rgba(255,255,255,0.09);
   border-bottom-left-radius: 4px;
+  color: rgba(255,255,255,0.92);
 }
 
 .bubble-user .bubble-text {
@@ -458,16 +334,28 @@
 
 .bubble-live .bubble-text {
   opacity: 0.65;
-  background: rgba(117,170,219,0.25);
-  border: 1px dashed rgba(117,170,219,0.5);
+  background: rgba(117,170,219,0.15);
+  border: 1px dashed rgba(117,170,219,0.4);
 }
 
-.cursor {
-  display: inline-block;
-  animation: blink 0.7s step-end infinite;
-  margin-left: 2px;
-}
+.cursor { display: inline-block; animation: blink 0.7s step-end infinite; margin-left: 2px; }
 @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── Feedback note (inline in messages) ─────────── */
+.feedback-note {
+  align-self: flex-start;
+  padding: 6px 12px 6px 10px;
+  border-left: 2px solid;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.6);
+  max-width: 82%;
+  animation: bubble-in 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  letter-spacing: 0.01em;
+}
+
+.feedback-note-good { border-color: rgba(74,222,128,0.7); }
+.feedback-note-tip  { border-color: rgba(250,204,21,0.6); }
 
 /* ── Controls ────────────────────────────────────── */
 .scene-controls {
@@ -477,67 +365,108 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px 28px;
-  background: rgba(0,0,0,0.45);
+  padding: 12px 20px 28px;
+  background: rgba(0,0,0,0.5);
   backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
 
-.status-text {
+/* ── Onboarding hint ─────────────────────────────── */
+.onboarding-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 480px;
+  gap: 12px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: rgba(117,170,219,0.07);
+  border: 1px solid rgba(117,170,219,0.15);
   font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.4;
+}
+
+.onboarding-hint strong { color: rgba(255,255,255,0.88); font-weight: 600; }
+
+.onboarding-dismiss {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(117,170,219,0.75);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+.onboarding-dismiss:hover { color: rgba(117,170,219,1); }
+
+/* ── Mic button ──────────────────────────────────── */
+.status-text {
+  font-size: 11px;
   color: var(--text-muted);
   min-height: 16px;
   text-align: center;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .mic-btn {
-  position: relative;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 0 0 var(--accent);
+  padding: 14px 48px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  min-width: 160px;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
-.mic-btn:not(.disabled):hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 6px rgba(255,255,255,0.08);
+.mic-btn:not(.mic-disabled):hover {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.22);
 }
 
-.mic-btn.listening {
-  background: #f87171;
-  animation: mic-glow 1s ease-in-out infinite;
+.mic-btn.mic-active {
+  background: rgba(204,0,32,0.10);
+  border-color: rgba(204,0,32,0.45);
 }
 
-@keyframes mic-glow {
-  0%, 100% { box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 0 0 rgba(248,113,113,0.5); }
-  50%       { box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 0 16px rgba(248,113,113,0); }
+.mic-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
 }
 
-.mic-btn.disabled { opacity: 0.28; cursor: not-allowed; }
-
-.mic-icon { position: relative; z-index: 1; }
-
-.mic-pulse {
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px solid rgba(248,113,113,0.5);
-  animation: mic-ring 1s ease-out infinite;
+.mic-wave {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
 }
-@keyframes mic-ring {
-  from { transform: scale(1); opacity: 1; }
-  to   { transform: scale(1.6); opacity: 0; }
+
+.mic-wave-bar {
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  background: #cc0020;
+  animation: mic-wave-anim 0.55s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * 0.09s);
 }
+
+@keyframes mic-wave-anim {
+  from { height: 4px; opacity: 0.5; }
+  to   { height: 20px; opacity: 1; }
+}
+
+.mic-btn.mic-disabled { opacity: 0.22; cursor: not-allowed; pointer-events: none; }
 
 .controls-row {
   display: flex;
@@ -547,58 +476,14 @@
 }
 
 .btn-secondary {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--text);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.6);
   padding: 6px 18px;
   border-radius: 20px;
-  font-size: 13px;
-  transition: background 0.15s;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: background 0.15s, color 0.15s;
 }
-.btn-secondary:hover { background: rgba(255,255,255,0.15); }
-
-/* ── Feedback card ───────────────────────────────── */
-.feedback-card {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 0 16px 0;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.45;
-  backdrop-filter: blur(12px);
-  animation: feedback-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  max-width: 640px;
-  align-self: center;
-  width: calc(100% - 32px);
-}
-
-@keyframes feedback-in {
-  from { opacity: 0; transform: translateY(6px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.feedback-good {
-  background: rgba(74,222,128,0.12);
-  border: 1px solid rgba(74,222,128,0.30);
-  color: #a7f3b8;
-}
-
-.feedback-tip {
-  background: rgba(250,204,21,0.10);
-  border: 1px solid rgba(250,204,21,0.28);
-  color: #fde68a;
-}
-
-.feedback-icon {
-  font-size: 15px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.feedback-text {
-  flex: 1;
-}
+.btn-secondary:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }

@@ -80,6 +80,7 @@ export const SCENES = {
     subtitle: 'Restaurante de carnes · Palermo',
     unlockXP: 150,
     bgGradient: 'linear-gradient(160deg, #0a0300 0%, #2a0d00 30%, #4a1800 60%, #1a0800 100%)',
+    bgPhoto: '/images/asado.jpg',
     accentColor: '#FF6B1A',
     character: {
       name: 'Mirta',
@@ -100,6 +101,7 @@ export const SCENES = {
     subtitle: 'Taxista porteño · Centro',
     unlockXP: 350,
     bgGradient: 'linear-gradient(160deg, #03030f 0%, #080818 30%, #0d1228 60%, #060610 100%)',
+    bgPhoto: '/images/ba2.jpg',
     accentColor: '#FFD700',
     character: {
       name: 'Rubén',
