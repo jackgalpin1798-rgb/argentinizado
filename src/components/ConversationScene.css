@@ -556,3 +556,49 @@
   transition: background 0.15s;
 }
 .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+/* ── Feedback card ───────────────────────────────── */
+.feedback-card {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 16px 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  backdrop-filter: blur(12px);
+  animation: feedback-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 640px;
+  align-self: center;
+  width: calc(100% - 32px);
+}
+
+@keyframes feedback-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.feedback-good {
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.30);
+  color: #a7f3b8;
+}
+
+.feedback-tip {
+  background: rgba(250,204,21,0.10);
+  border: 1px solid rgba(250,204,21,0.28);
+  color: #fde68a;
+}
+
+.feedback-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.feedback-text {
+  flex: 1;
+}

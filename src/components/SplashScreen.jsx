@@ -2,18 +2,20 @@ import React, { useEffect, useRef, useState } from 'react'
 import './SplashScreen.css'
 
 const CULTURE_TILES = [
-  { emoji: '🏟️', label: 'El Monumental',   color: '#cc0020', img: 'https://upload.wikimedia.org/wikipedia/commons/5/54/RiverPlateStadium.jpg' },
-  { emoji: '⚽',  label: 'Messi',            color: '#1a4a8a', img: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Messi_vs_Nigeria_2018.jpg' },
-  { emoji: '🏆',  label: 'Maradona',         color: '#8a6200', img: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Maradona-Mundial_86_vs_Inglaterra_2.jpg' },
-  { emoji: '💧',  label: 'Iguazú',           color: '#1a5a44', img: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/IguazuArgentina.jpg' },
-  { emoji: '🏔️', label: 'Bariloche',        color: '#2a4a6a', img: 'https://upload.wikimedia.org/wikipedia/commons/0/07/Bariloche_panorama_2.jpg' },
-  { emoji: '🥩',  label: 'Asado',            color: '#7a2200', img: 'https://upload.wikimedia.org/wikipedia/commons/3/36/Asado1.jpg' },
-  { emoji: '🧉',  label: 'Mate',             color: '#2a4a1a', img: null },
+  { emoji: '🏟️', label: 'El Monumental',   color: '#cc0020', img: '/images/monumental.jpg' },
+  { emoji: '⚽',  label: 'Messi',            color: '#1a4a8a', img: '/images/messi.jpg' },
+  { emoji: '🏆',  label: 'Maradona',         color: '#8a6200', img: '/images/maradona.jpg' },
+  { emoji: '💧',  label: 'Iguazú',           color: '#1a5a44', img: '/images/iguazu.jpg' },
+  { emoji: '🏔️', label: 'Bariloche',        color: '#2a4a6a', img: '/images/bariloche.jpg' },
+  { emoji: '🥩',  label: 'Asado',            color: '#7a2200', img: '/images/asado.jpg' },
+  { emoji: '🧉',  label: 'Mate',             color: '#2a4a1a', img: '/images/mate.jpg' },
+  { emoji: '🌆',  label: 'Buenos Aires',     color: '#1a2a4a', img: '/images/ba1.jpg' },
+  { emoji: '🌃',  label: 'Buenos Aires',     color: '#1a3060', img: '/images/ba2.jpg' },
+  { emoji: '🌉',  label: 'Buenos Aires',     color: '#0a1a3a', img: '/images/ba4.webp' },
   { emoji: '🍾',  label: 'Fernet',           color: '#0a1a0a', img: null },
   { emoji: '🥛',  label: 'Dulce de Leche',   color: '#7a4a10', img: null },
   { emoji: '🎶',  label: 'Tango',            color: '#5a0a18', img: null },
   { emoji: '🥟',  label: 'Empanadas',        color: '#6a3a10', img: null },
-  { emoji: '🌆',  label: 'Buenos Aires',     color: '#1a2a4a', img: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Buenos_Aires_Aerial.JPG' },
 ]
 
 function Tile({ emoji, label, color, img }) {

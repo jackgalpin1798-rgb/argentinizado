@@ -10,8 +10,29 @@ import './ConversationScene.css'
 const MAX_TURNS = 8
 const SURVIVAL_MISTAKES_ALLOWED = 3
 
+const FEEDBACK_INSTRUCTION = '\n\nCOACHING: After your in-character response, add a new line starting with exactly "FEEDBACK:" followed by one coaching sentence in English for the learner. If they spoke good Argentine Spanish, say what was excellent. If they made an error (used English, said "tú" instead of "vos", wrong verb conjugation, unnatural phrasing), give a specific correction. One sentence only. Examples: "FEEDBACK: ¡Perfecto! Great use of voseo." or "FEEDBACK: Say \'vos tenés\' not \'tú tienes\' — Argentina uses voseo, not tuteo."'
+
 function sanitize(text) {
   return text.replace(/—/g, ',').replace(/–/g, '-')
+}
+
+function extractFeedback(text) {
+  const lines = text.split('\n')
+  const fbIdx = lines.findIndex(l => /^FEEDBACK:/i.test(l.trim()))
+  if (fbIdx === -1) return { clean: text.trim(), feedback: null }
+  const feedback = lines[fbIdx].replace(/^FEEDBACK:\s*/i, '').trim()
+  const clean = lines.slice(0, fbIdx).join('\n').trim()
+  return { clean, feedback }
+}
+
+function FeedbackCard({ text }) {
+  const isGood = /^(great|nice|perfect|excellent|¡perfecto|¡bien|¡buenísimo|¡genial|love|spot.on|nailed)/i.test(text) || /!\s*$/i.test(text)
+  return (
+    <div className={`feedback-card ${isGood ? 'feedback-good' : 'feedback-tip'}`}>
+      <span className="feedback-icon">{isGood ? '⭐' : '📝'}</span>
+      <span className="feedback-text">{text}</span>
+    </div>
+  )
 }
 
 function SoundWave({ color }) {
@@ -225,6 +246,29 @@ function SceneAtmosphere({ sceneId, hasPhoto }) {
 }
 
 function CinematicIntro({ scene, onEnter }) {
+  const audioRef = useRef(null)
+
+  useEffect(() => {
+    const audio = new Audio('/intro.mp4')
+    audio.volume = 0.75
+    audioRef.current = audio
+    audio.play().catch(() => {})
+    return () => { audio.pause(); audio.src = '' }
+  }, [])
+
+  const handleEnter = () => {
+    const audio = audioRef.current
+    if (audio) {
+      let vol = audio.volume
+      const fade = setInterval(() => {
+        vol = Math.max(0, vol - 0.06)
+        audio.volume = vol
+        if (vol <= 0) { audio.pause(); clearInterval(fade) }
+      }, 60)
+    }
+    onEnter()
+  }
+
   return (
     <div className="cinematic-overlay">
       <div className="cin-city">BUENOS AIRES</div>
@@ -234,7 +278,7 @@ function CinematicIntro({ scene, onEnter }) {
         <div className="cin-char-name">{scene.character.name}</div>
         <div className="cin-char-role">{scene.character.role}</div>
       </div>
-      <button className="cin-enter-btn" onClick={onEnter}>
+      <button className="cin-enter-btn" onClick={handleEnter}>
         ENTRAR
       </button>
     </div>
@@ -249,6 +293,7 @@ export default function ConversationScene({ scene, difficulty, onEnd }) {
   const [statusText, setStatusText] = useState('')
   const [mistakeCount, setMistakeCount] = useState(0)
   const [liveTranscript, setLiveTranscript] = useState('')
+  const [feedback, setFeedback] = useState(null)
   const historyRef = useRef([])
   const turnCount = useRef(0)
   const endingRef = useRef(false)
@@ -258,7 +303,7 @@ export default function ConversationScene({ scene, difficulty, onEnd }) {
   const ambientAudio = useAmbientAudio(scene.id)
   const { listening, startListening, stopListening, error: micError } = useSpeechRecognition()
 
-  const effectivePrompt = scene.systemPrompt + (DIFFICULTY_MODIFIERS[difficulty] || '')
+  const effectivePrompt = scene.systemPrompt + (DIFFICULTY_MODIFIERS[difficulty] || '') + FEEDBACK_INSTRUCTION
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -269,13 +314,15 @@ export default function ConversationScene({ scene, difficulty, onEnd }) {
     historyRef.current.push({ role, content })
   }, [])
 
-  const characterSpeak = useCallback(async (text) => {
-    const clean = sanitize(text)
-    addMessage('assistant', clean)
+  const characterSpeak = useCallback(async (text, giveFeedback = false) => {
+    const { clean, feedback: fb } = extractFeedback(text)
+    const sanitized = sanitize(clean)
+    addMessage('assistant', sanitized)
+    if (giveFeedback && fb) setFeedback(fb)
     setCharSpeaking(true)
     setUserTurn(false)
     setStatusText('')
-    await speak(clean, scene.character.voiceId, null, () => setCharSpeaking(false), 'es-AR')
+    await speak(sanitized, scene.character.voiceId, null, () => setCharSpeaking(false), 'es-AR')
   }, [scene, addMessage])
 
   const finishConversation = useCallback(() => {
@@ -313,7 +360,7 @@ export default function ConversationScene({ scene, difficulty, onEnd }) {
     setStatusText('Thinking...')
     try {
       const reply = await getCharacterReply(effectivePrompt, historyRef.current)
-      await characterSpeak(reply)
+      await characterSpeak(reply, true)
       setUserTurn(true)
       setStatusText('Your turn')
     } catch (e) {
@@ -416,6 +463,8 @@ export default function ConversationScene({ scene, difficulty, onEnd }) {
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {feedback && <FeedbackCard text={feedback} />}
 
       <div className="scene-controls">
         <div className="status-text">{micError || statusText}</div>
