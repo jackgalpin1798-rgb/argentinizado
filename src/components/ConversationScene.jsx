@@ -51,15 +51,18 @@ function SceneAtmosphere({ sceneId }) {
     const particles = []
 
     if (baseId === 'monumental') {
-      for (let i = 0; i < 180; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: canvas.height * 0.55 + Math.random() * canvas.height * 0.45,
-          r: 1 + Math.random() * 2,
-          speed: 0.2 + Math.random() * 0.4,
-          phase: Math.random() * Math.PI * 2,
-          color: Math.random() > 0.5 ? 'rgba(255,255,255,0.6)' : 'rgba(200,30,30,0.6)',
-        })
+      // Stars
+      for (let i = 0; i < 55; i++) {
+        particles.push({ type: 'star', x: Math.random() * canvas.width, y: Math.random() * canvas.height * 0.48, r: 0.4 + Math.random() * 1.1, twinkle: Math.random() * Math.PI * 2, tSpeed: 0.8 + Math.random() * 2 })
+      }
+      // People
+      for (let i = 0; i < 34; i++) {
+        const depth = 0.1 + Math.random() * 0.9
+        particles.push({ type: 'person', x: Math.random() * canvas.width, y: canvas.height * (0.62 + depth * 0.13), h: 20 + depth * 36, scarf: Math.random() > 0.45, scarfColor: Math.random() > 0.5 ? '#cc0020' : '#ffffff', bob: Math.random() * Math.PI * 2, speed: (0.10 + Math.random() * 0.20) * (Math.random() > 0.5 ? 1 : -1) })
+      }
+      // Confetti
+      for (let i = 0; i < 22; i++) {
+        particles.push({ type: 'confetti', x: Math.random() * canvas.width, y: Math.random() * canvas.height * 0.65, cw: 3 + Math.random() * 5, ch: 2 + Math.random() * 3, color: Math.random() > 0.5 ? '#E8052A' : '#ffffff', speed: 0.3 + Math.random() * 0.7, drift: (Math.random() - 0.5) * 0.5, rot: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.04 })
       }
     } else if (sceneId === 'parrilla') {
       for (let i = 0; i < 60; i++) {
@@ -91,23 +94,203 @@ function SceneAtmosphere({ sceneId }) {
       t += 0.016
 
       if (baseId === 'monumental') {
-        const sweep = Math.sin(t * 0.4) * 0.3 + 0.5
-        const grd = ctx.createRadialGradient(
-          canvas.width * sweep, 0, 0,
-          canvas.width * sweep, 0, canvas.height * 0.8
-        )
-        grd.addColorStop(0, 'rgba(255,220,150,0.12)')
-        grd.addColorStop(1, 'rgba(255,220,150,0)')
-        ctx.fillStyle = grd
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        const W = canvas.width, H = canvas.height
 
-        particles.forEach(p => {
-          p.y += Math.sin(t * p.speed + p.phase) * 0.4
+        // Sky
+        const sky = ctx.createLinearGradient(0, 0, 0, H)
+        sky.addColorStop(0, '#01000b')
+        sky.addColorStop(0.55, '#0e001a')
+        sky.addColorStop(1, '#1c0030')
+        ctx.fillStyle = sky
+        ctx.fillRect(0, 0, W, H)
+
+        // Warm glow from stadium lights behind
+        const backGlow = ctx.createRadialGradient(W * 0.5, H * 0.28, 0, W * 0.5, H * 0.28, W * 0.6)
+        backGlow.addColorStop(0, 'rgba(255,180,60,0.14)')
+        backGlow.addColorStop(0.4, 'rgba(200,20,30,0.07)')
+        backGlow.addColorStop(1, 'rgba(0,0,0,0)')
+        ctx.fillStyle = backGlow
+        ctx.fillRect(0, 0, W, H)
+
+        // Stars
+        particles.filter(p => p.type === 'star').forEach(p => {
+          const a = 0.35 + 0.35 * Math.sin(t * p.tSpeed + p.twinkle)
           ctx.beginPath()
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-          ctx.fillStyle = p.color
+          ctx.fillStyle = `rgba(255,255,255,${a})`
           ctx.fill()
         })
+
+        // Floodlight beams from towers
+        ;[[W * 0.14, H * 0.11], [W * 0.86, H * 0.11]].forEach(([bx, by], i) => {
+          const a = 0.07 + Math.sin(t * 0.2 + i * 2) * 0.02
+          const beam = ctx.createRadialGradient(bx, by, 0, bx, by, H * 0.75)
+          beam.addColorStop(0, `rgba(255,240,200,${a})`)
+          beam.addColorStop(1, 'rgba(255,240,200,0)')
+          ctx.fillStyle = beam
+          ctx.fillRect(0, 0, W, H)
+        })
+
+        // Stadium body — trapezoid (wider base = perspective of looking up)
+        const sTop = H * 0.17, sBot = H * 0.62
+        const sL = W * 0.04, sR = W * 0.96
+        const sTL = W * 0.10, sTR = W * 0.90
+        ctx.fillStyle = '#07000f'
+        ctx.beginPath()
+        ctx.moveTo(sL, sBot); ctx.lineTo(sR, sBot)
+        ctx.lineTo(sTR, sTop); ctx.lineTo(sTL, sTop)
+        ctx.closePath()
+        ctx.fill()
+
+        // Rim lights along top of stadium
+        const rim = ctx.createLinearGradient(0, sTop - 3, 0, sTop + 14)
+        rim.addColorStop(0, 'rgba(255,230,130,0.95)')
+        rim.addColorStop(1, 'rgba(255,230,130,0)')
+        ctx.fillStyle = rim
+        ctx.fillRect(sTL, sTop - 3, sTR - sTL, 17)
+
+        // Floodlight towers above rim
+        ;[sTL + 12, sTL + (sTR - sTL) * 0.34, sTL + (sTR - sTL) * 0.66, sTR - 12].forEach(tx => {
+          ctx.fillStyle = '#151528'
+          ctx.fillRect(tx - 2, sTop - 42, 4, 42)
+          ctx.fillStyle = 'rgba(255,225,120,0.92)'
+          ctx.fillRect(tx - 7, sTop - 46, 14, 6)
+          const tg = ctx.createRadialGradient(tx, sTop - 43, 0, tx, sTop - 43, 32)
+          tg.addColorStop(0, 'rgba(255,220,100,0.22)')
+          tg.addColorStop(1, 'rgba(0,0,0,0)')
+          ctx.fillStyle = tg
+          ctx.fillRect(0, 0, W, H)
+        })
+
+        // Arched gate lights on facade
+        for (let i = 0; i < 9; i++) {
+          const gx = sTL + ((sTR - sTL) / 10) * (i + 1)
+          const gy = sTop + 18
+          const ga = 0.09 + Math.sin(t * 0.4 + i * 0.7) * 0.03
+          ctx.fillStyle = `rgba(255,190,80,${ga})`
+          ctx.beginPath()
+          ctx.arc(gx, gy + 7, 6, Math.PI, 0)
+          ctx.rect(gx - 6, gy + 7, 12, 10)
+          ctx.fill()
+        }
+
+        // Red band (River Plate colours on facade)
+        ctx.fillStyle = 'rgba(210,0,20,0.20)'
+        ctx.fillRect(sTL, sTop + 32, sTR - sTL, 13)
+        ctx.fillStyle = 'rgba(255,255,255,0.10)'
+        ctx.fillRect(sTL, sTop + 47, sTR - sTL, 8)
+
+        // Ground / plaza
+        const gnd = ctx.createLinearGradient(0, sBot, 0, H)
+        gnd.addColorStop(0, '#0e0009')
+        gnd.addColorStop(1, '#040003')
+        ctx.fillStyle = gnd
+        ctx.fillRect(0, sBot, W, H - sBot)
+
+        // Warm glow pools under stalls
+        ;[[W * 0.17, H * 0.75], [W * 0.81, H * 0.75]].forEach(([gx, gy]) => {
+          const sg = ctx.createRadialGradient(gx, gy, 0, gx, gy, W * 0.18)
+          sg.addColorStop(0, 'rgba(255,140,30,0.22)')
+          sg.addColorStop(1, 'rgba(255,140,30,0)')
+          ctx.fillStyle = sg
+          ctx.fillRect(0, 0, W, H)
+        })
+
+        // Food stalls
+        const drawStall = (cx, sy, sw, sh, label) => {
+          // Awning
+          ctx.fillStyle = '#6e0010'
+          ctx.beginPath()
+          ctx.moveTo(cx - sw / 2 - 10, sy)
+          ctx.lineTo(cx + sw / 2 + 10, sy)
+          ctx.lineTo(cx + sw / 2, sy + 18)
+          ctx.lineTo(cx - sw / 2, sy + 18)
+          ctx.closePath()
+          ctx.fill()
+          for (let s = 0; s < 5; s++) {
+            ctx.fillStyle = 'rgba(255,255,255,0.11)'
+            ctx.fillRect(cx - sw / 2 + (sw / 5) * s, sy, sw / 10, 18)
+          }
+          // Body
+          ctx.fillStyle = '#150700'
+          ctx.fillRect(cx - sw / 2, sy + 18, sw, sh)
+          // Interior glow
+          const ig = ctx.createRadialGradient(cx, sy + 18 + sh / 2, 0, cx, sy + 18 + sh / 2, sw * 0.55)
+          ig.addColorStop(0, 'rgba(255,140,30,0.42)')
+          ig.addColorStop(1, 'rgba(255,140,30,0)')
+          ctx.fillStyle = ig
+          ctx.fillRect(cx - sw / 2, sy + 18, sw, sh)
+          // Counter
+          ctx.fillStyle = '#2a1000'
+          ctx.fillRect(cx - sw / 2, sy + 18 + sh - 18, sw, 18)
+          // Label
+          ctx.save()
+          ctx.fillStyle = 'rgba(255,210,140,0.90)'
+          ctx.font = `bold ${Math.max(9, Math.floor(sw * 0.13))}px sans-serif`
+          ctx.textAlign = 'center'
+          ctx.fillText(label, cx, sy + 18 + sh * 0.52 + 4)
+          ctx.restore()
+          // Smoke
+          for (let s = 0; s < 3; s++) {
+            const smx = cx - sw / 4 + (sw / 4) * s
+            const smy = sy - 8 - Math.sin(t * 0.8 + s * 2 + cx) * 7
+            ctx.beginPath()
+            ctx.arc(smx, smy, 8 + s * 4, 0, Math.PI * 2)
+            ctx.fillStyle = `rgba(200,180,160,${0.07 + Math.sin(t * 0.5 + s) * 0.03})`
+            ctx.fill()
+          }
+        }
+
+        const sW = Math.min(W * 0.15, 112)
+        const sH = H * 0.16
+        const sY = sBot + (H - sBot) * 0.08
+        drawStall(W * 0.17, sY, sW, sH, 'CHORIPAN')
+        drawStall(W * 0.81, sY, sW, sH, 'EMPANADAS')
+
+        // People silhouettes
+        particles.filter(p => p.type === 'person').forEach(p => {
+          p.x += p.speed
+          if (p.x > W + 25) p.x = -25
+          if (p.x < -25) p.x = W + 25
+          const bob = Math.sin(t * 2.5 + p.bob) * 1.2
+          const da = Math.min(0.92, 0.42 + ((p.y - H * 0.62) / (H * 0.15)) * 0.5)
+          ctx.fillStyle = `rgba(6,0,4,${da})`
+          const bw = p.h * 0.30
+          ctx.fillRect(p.x - bw / 2, p.y - p.h * 0.62 + bob, bw, p.h * 0.62)
+          ctx.beginPath()
+          ctx.arc(p.x, p.y - p.h * 0.78 + bob, p.h * 0.14, 0, Math.PI * 2)
+          ctx.fill()
+          if (p.scarf) {
+            ctx.fillStyle = p.scarfColor
+            ctx.globalAlpha = da * 0.85
+            ctx.fillRect(p.x - bw / 2 - 3, p.y - p.h * 0.65 + bob, bw + 6, 3)
+            ctx.globalAlpha = 1
+          }
+        })
+
+        // Confetti drifting
+        particles.filter(p => p.type === 'confetti').forEach(p => {
+          p.y += p.speed
+          p.x += p.drift + Math.sin(t * 0.4 + p.y * 0.012) * 0.25
+          p.rot += p.rotSpeed
+          if (p.y > H + 12) { p.y = -12; p.x = Math.random() * W }
+          ctx.save()
+          ctx.translate(p.x, p.y)
+          ctx.rotate(p.rot)
+          ctx.globalAlpha = 0.6
+          ctx.fillStyle = p.color
+          ctx.fillRect(-p.cw / 2, -p.ch / 2, p.cw, p.ch)
+          ctx.restore()
+        })
+
+        // Sweeping floodlight overlay
+        const sweep = Math.sin(t * 0.25) * 0.35 + 0.5
+        const swGrd = ctx.createRadialGradient(W * sweep, 0, 0, W * sweep, 0, H * 0.9)
+        swGrd.addColorStop(0, 'rgba(255,220,150,0.06)')
+        swGrd.addColorStop(1, 'rgba(255,220,150,0)')
+        ctx.fillStyle = swGrd
+        ctx.fillRect(0, 0, W, H)
+
       } else if (baseId === 'parrilla') {
         const pulse = 0.12 + Math.sin(t * 2.1) * 0.04
         const grd = ctx.createRadialGradient(
