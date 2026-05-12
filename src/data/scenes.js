@@ -17,7 +17,7 @@ export const SCENES = {
     subtitle: 'Puestitos afuera · Pre-partido',
     unlockXP: 0,
     bgGradient: 'linear-gradient(160deg, #06000a 0%, #1a0005 35%, #2d0008 60%, #0a0a1a 100%)',
-    bgPhoto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Estadio_Monumental_de_River_Plate%2C_Buenos_Aires.jpg/1280px-Estadio_Monumental_de_River_Plate%2C_Buenos_Aires.jpg',
+    bgPhoto: 'https://upload.wikimedia.org/wikipedia/commons/5/54/RiverPlateStadium.jpg',
     accentColor: '#E8052A',
     character: {
       name: 'Facundo',
@@ -38,7 +38,7 @@ export const SCENES = {
     subtitle: 'La Tribuna · En el partido',
     unlockXP: 80,
     bgGradient: 'linear-gradient(160deg, #0d0002 0%, #220008 40%, #380010 70%, #0a0005 100%)',
-    bgPhoto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Estadio_Monumental_Buenos_Aires.jpg/1280px-Estadio_Monumental_Buenos_Aires.jpg',
+    bgPhoto: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Estadio_mas_monumental.jpg',
     accentColor: '#E8052A',
     character: {
       name: 'Facundo',
@@ -59,7 +59,7 @@ export const SCENES = {
     subtitle: 'Festejo en la calle · Post-partido',
     unlockXP: 200,
     bgGradient: 'linear-gradient(160deg, #08000f 0%, #18003a 40%, #08001a 100%)',
-    bgPhoto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Estadio_Monumental_de_River_Plate%2C_Buenos_Aires.jpg/1280px-Estadio_Monumental_de_River_Plate%2C_Buenos_Aires.jpg',
+    bgPhoto: 'https://upload.wikimedia.org/wikipedia/commons/5/54/RiverPlateStadium.jpg',
     accentColor: '#E8052A',
     character: {
       name: 'Facundo',
