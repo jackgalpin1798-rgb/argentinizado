@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react'
 
 const CHAR_STYLES = {
-  facundo: { skin: '#c8855a', hair: '#160800', eye: '#2a1000', shirt: '#E8052A', scarf: true },
+  facundo: { skin: '#c8855a', hair: '#160800', eye: '#2a1000', shirt: '#111', scarf: true, cap: true, puffa: true, fernet: true },
   mirta:   { skin: '#c8906a', hair: '#1a0a02', eye: '#2e1800', shirt: '#4a6080', scarf: false, earrings: true },
   ruben:   { skin: '#b07252', hair: '#888', eye: '#241200', shirt: '#444', scarf: false, mustache: true },
 }
@@ -22,28 +22,110 @@ function drawCharacter(ctx, charKey, cx, cy, r, mouthOpen, blinkP) {
   ctx.rect(cx - r * 0.18, cy + r * 0.72, r * 0.36, r * 0.35)
   ctx.fill()
 
-  // Shoulders / clothing
-  const shirtGrad = ctx.createLinearGradient(cx, cy + r * 0.88, cx, cy + r * 1.4)
-  shirtGrad.addColorStop(0, c.shirt)
-  shirtGrad.addColorStop(1, c.shirt + 'bb')
-  ctx.fillStyle = shirtGrad
-  ctx.beginPath()
-  ctx.moveTo(cx - r * 0.2, cy + r * 0.88)
-  ctx.quadraticCurveTo(cx - r * 0.5, cy + r * 0.94, cx - r * 1.15, cy + r * 1.4)
-  ctx.lineTo(cx + r * 1.15, cy + r * 1.4)
-  ctx.quadraticCurveTo(cx + r * 0.5, cy + r * 0.94, cx + r * 0.2, cy + r * 0.88)
-  ctx.closePath()
-  ctx.fill()
+  // Puffa jacket (Facundo) or plain shirt
+  if (c.puffa) {
+    // Dark puffa jacket body
+    const puffaGrad = ctx.createLinearGradient(cx, cy + r * 0.88, cx, cy + r * 1.4)
+    puffaGrad.addColorStop(0, '#222')
+    puffaGrad.addColorStop(1, '#111')
+    ctx.fillStyle = puffaGrad
+    ctx.beginPath()
+    ctx.moveTo(cx - r * 0.2, cy + r * 0.88)
+    ctx.quadraticCurveTo(cx - r * 0.55, cy + r * 0.94, cx - r * 1.2, cy + r * 1.4)
+    ctx.lineTo(cx + r * 1.2, cy + r * 1.4)
+    ctx.quadraticCurveTo(cx + r * 0.55, cy + r * 0.94, cx + r * 0.2, cy + r * 0.88)
+    ctx.closePath()
+    ctx.fill()
+    // Quilted horizontal lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'
+    ctx.lineWidth = r * 0.018
+    for (let q = 0; q < 4; q++) {
+      const qy = cy + r * (0.96 + q * 0.12)
+      ctx.beginPath()
+      ctx.moveTo(cx - r * 0.9, qy)
+      ctx.lineTo(cx + r * 0.9, qy)
+      ctx.stroke()
+    }
+    // River Plate sash stripe on left shoulder
+    ctx.fillStyle = '#E8052A'
+    ctx.save()
+    ctx.translate(cx - r * 0.55, cy + r * 0.88)
+    ctx.rotate(0.5)
+    ctx.fillRect(-r * 0.08, 0, r * 0.16, r * 0.55)
+    ctx.restore()
+    // Zip line down centre
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)'
+    ctx.lineWidth = r * 0.022
+    ctx.beginPath()
+    ctx.moveTo(cx, cy + r * 0.90)
+    ctx.lineTo(cx, cy + r * 1.4)
+    ctx.stroke()
+  } else {
+    const shirtGrad = ctx.createLinearGradient(cx, cy + r * 0.88, cx, cy + r * 1.4)
+    shirtGrad.addColorStop(0, c.shirt)
+    shirtGrad.addColorStop(1, c.shirt + 'bb')
+    ctx.fillStyle = shirtGrad
+    ctx.beginPath()
+    ctx.moveTo(cx - r * 0.2, cy + r * 0.88)
+    ctx.quadraticCurveTo(cx - r * 0.5, cy + r * 0.94, cx - r * 1.15, cy + r * 1.4)
+    ctx.lineTo(cx + r * 1.15, cy + r * 1.4)
+    ctx.quadraticCurveTo(cx + r * 0.5, cy + r * 0.94, cx + r * 0.2, cy + r * 0.88)
+    ctx.closePath()
+    ctx.fill()
+  }
 
-  // Scarf (Facundo — River Plate red/white sash)
+  // Fernet bottle in hand (Facundo)
+  if (c.fernet) {
+    const bx = cx + r * 0.88, by = cy + r * 1.05
+    // Bottle body
+    ctx.fillStyle = '#0d0d0d'
+    ctx.beginPath()
+    ctx.roundRect(bx - r * 0.07, by - r * 0.38, r * 0.14, r * 0.38, r * 0.02)
+    ctx.fill()
+    // Bottle shoulder taper
+    ctx.fillStyle = '#0d0d0d'
+    ctx.beginPath()
+    ctx.moveTo(bx - r * 0.07, by - r * 0.38)
+    ctx.lineTo(bx - r * 0.04, by - r * 0.48)
+    ctx.lineTo(bx + r * 0.04, by - r * 0.48)
+    ctx.lineTo(bx + r * 0.07, by - r * 0.38)
+    ctx.fill()
+    // Neck
+    ctx.fillRect(bx - r * 0.03, by - r * 0.58, r * 0.06, r * 0.12)
+    // Label
+    ctx.fillStyle = '#e8e0c8'
+    ctx.fillRect(bx - r * 0.062, by - r * 0.30, r * 0.124, r * 0.18)
+    // Label text
+    ctx.save()
+    ctx.fillStyle = '#111'
+    ctx.font = `bold ${Math.max(5, Math.floor(r * 0.055))}px sans-serif`
+    ctx.textAlign = 'center'
+    ctx.fillText('FERNET', bx, by - r * 0.20)
+    ctx.fillStyle = '#8B0000'
+    ctx.font = `${Math.max(4, Math.floor(r * 0.044))}px sans-serif`
+    ctx.fillText('BRANCA', bx, by - r * 0.14)
+    ctx.restore()
+    // Hand gripping bottle
+    ctx.fillStyle = darken(c.skin, 0.06)
+    ctx.beginPath()
+    ctx.ellipse(bx, by + r * 0.01, r * 0.1, r * 0.07, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // Scarf (Facundo — River Plate red/white, worn loose around neck)
   if (c.scarf) {
-    const scarfY = cy + r * 0.92
+    const scarfY = cy + r * 0.88
     ctx.fillStyle = '#E8052A'
-    ctx.fillRect(cx - r * 0.65, scarfY, r * 1.3, r * 0.09)
+    ctx.fillRect(cx - r * 0.42, scarfY, r * 0.84, r * 0.07)
     ctx.fillStyle = '#ffffff'
-    ctx.fillRect(cx - r * 0.65, scarfY + r * 0.09, r * 1.3, r * 0.09)
+    ctx.fillRect(cx - r * 0.42, scarfY + r * 0.07, r * 0.84, r * 0.07)
     ctx.fillStyle = '#E8052A'
-    ctx.fillRect(cx - r * 0.65, scarfY + r * 0.18, r * 1.3, r * 0.09)
+    ctx.fillRect(cx - r * 0.42, scarfY + r * 0.14, r * 0.84, r * 0.07)
+    // Scarf hanging ends
+    ctx.fillStyle = '#E8052A'
+    ctx.fillRect(cx - r * 0.38, scarfY + r * 0.21, r * 0.12, r * 0.28)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(cx - r * 0.25, scarfY + r * 0.21, r * 0.12, r * 0.28)
   }
 
   // Head base
@@ -81,14 +163,51 @@ function drawCharacter(ctx, charKey, cx, cy, r, mouthOpen, blinkP) {
     ctx.fill()
   }
 
-  // Hair
+  // Hair (only visible sides when wearing cap)
   ctx.fillStyle = c.hair
-  // Top / forehead hair
-  ctx.beginPath()
-  ctx.ellipse(cx, cy - r * 0.24, r * 0.7, r * 0.7, 0, Math.PI, 0)
-  ctx.fill()
+  if (!c.cap) {
+    ctx.beginPath()
+    ctx.ellipse(cx, cy - r * 0.24, r * 0.7, r * 0.7, 0, Math.PI, 0)
+    ctx.fill()
+  } else {
+    // Just sideburn/ear hair visible below cap
+    ctx.fillRect(cx - r * 0.68, cy - r * 0.45, r * 0.13, r * 0.42)
+    ctx.fillRect(cx + r * 0.55, cy - r * 0.45, r * 0.13, r * 0.42)
+  }
 
-  if (charKey === 'mirta') {
+  if (c.cap) {
+    // Baseball cap covering hair
+    // Cap body
+    ctx.fillStyle = '#0a0a0a'
+    ctx.beginPath()
+    ctx.ellipse(cx, cy - r * 0.55, r * 0.72, r * 0.5, 0, Math.PI, 0)
+    ctx.fill()
+    // Cap side panels
+    ctx.fillRect(cx - r * 0.72, cy - r * 0.55, r * 0.14, r * 0.3)
+    ctx.fillRect(cx + r * 0.58, cy - r * 0.55, r * 0.14, r * 0.3)
+    // River Plate logo panel on front (white with red stripe)
+    ctx.fillStyle = '#fff'
+    ctx.beginPath()
+    ctx.ellipse(cx, cy - r * 0.62, r * 0.28, r * 0.22, 0, Math.PI, 0)
+    ctx.fill()
+    ctx.fillStyle = '#E8052A'
+    ctx.fillRect(cx - r * 0.28, cy - r * 0.66, r * 0.56, r * 0.07)
+    // Cap brim
+    ctx.fillStyle = '#0a0a0a'
+    ctx.beginPath()
+    ctx.ellipse(cx + r * 0.1, cy - r * 0.56, r * 0.65, r * 0.12, 0.12, 0, Math.PI * 2)
+    ctx.fill()
+    // Brim underside tint
+    ctx.fillStyle = 'rgba(255,255,255,0.04)'
+    ctx.beginPath()
+    ctx.ellipse(cx + r * 0.12, cy - r * 0.53, r * 0.55, r * 0.07, 0.12, 0, Math.PI)
+    ctx.fill()
+    // Cap button on top
+    ctx.fillStyle = '#E8052A'
+    ctx.beginPath()
+    ctx.arc(cx, cy - r * 1.04, r * 0.05, 0, Math.PI * 2)
+    ctx.fill()
+  } else if (charKey === 'mirta') {
     // Hair pulled back — bun
     ctx.beginPath()
     ctx.ellipse(cx, cy - r * 0.88, r * 0.22, r * 0.22, 0, 0, Math.PI * 2)
@@ -111,8 +230,8 @@ function drawCharacter(ctx, charKey, cx, cy, r, mouthOpen, blinkP) {
     ctx.beginPath()
     ctx.ellipse(cx, cy - r * 0.5, r * 0.38, r * 0.28, 0, 0, Math.PI * 2)
     ctx.fill()
-  } else {
-    // Facundo — full dark hair with hairline
+  } else if (!c.cap) {
+    // Generic — full hair sides
     ctx.fillRect(cx - r * 0.68, cy - r * 0.45, r * 0.14, r * 0.55)
     ctx.fillRect(cx + r * 0.54, cy - r * 0.45, r * 0.14, r * 0.55)
   }
