@@ -25,10 +25,6 @@ function Tile({ emoji, label, color, img }) {
     <div className="sp-tile" style={{ background: show ? undefined : `linear-gradient(160deg,${color}cc,${color}44)` }}>
       {show && <img src={img} alt={label} className="sp-tile-img" onError={() => setFailed(true)} />}
       <div className="sp-tile-overlay" />
-      <div className="sp-tile-content">
-        <span className="sp-tile-emoji">{emoji}</span>
-        <span className="sp-tile-label">{label}</span>
-      </div>
     </div>
   )
 }
