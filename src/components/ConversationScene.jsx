@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { getCharacterReply } from '../services/claudeService'
 import { speak, stopSpeaking } from '../services/elevenLabsService'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
+import { useAmbientAudio } from '../hooks/useAmbientAudio'
 import { FacundoPortrait, MirtraPortrait, RubenPortrait } from './CharacterPortraits'
+import { DIFFICULTY_MODIFIERS } from '../data/scenes'
 import './ConversationScene.css'
 
 const PORTRAITS = {
@@ -15,6 +17,10 @@ const PORTRAITS = {
 
 const MAX_TURNS = 8
 const SURVIVAL_MISTAKES_ALLOWED = 3
+
+function sanitize(text) {
+  return text.replace(/—/g, ',').replace(/–/g, '-')
+}
 
 function SoundWave({ color }) {
   return (
@@ -45,7 +51,6 @@ function SceneAtmosphere({ sceneId }) {
     const particles = []
 
     if (baseId === 'monumental') {
-      // crowd dots
       for (let i = 0; i < 180; i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -57,7 +62,6 @@ function SceneAtmosphere({ sceneId }) {
         })
       }
     } else if (sceneId === 'parrilla') {
-      // embers
       for (let i = 0; i < 60; i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -70,7 +74,6 @@ function SceneAtmosphere({ sceneId }) {
         })
       }
     } else if (sceneId === 'taxi') {
-      // rain streaks
       for (let i = 0; i < 120; i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -88,7 +91,6 @@ function SceneAtmosphere({ sceneId }) {
       t += 0.016
 
       if (baseId === 'monumental') {
-        // sweeping spotlight
         const sweep = Math.sin(t * 0.4) * 0.3 + 0.5
         const grd = ctx.createRadialGradient(
           canvas.width * sweep, 0, 0,
@@ -99,7 +101,6 @@ function SceneAtmosphere({ sceneId }) {
         ctx.fillStyle = grd
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        // crowd dots
         particles.forEach(p => {
           p.y += Math.sin(t * p.speed + p.phase) * 0.4
           ctx.beginPath()
@@ -108,7 +109,6 @@ function SceneAtmosphere({ sceneId }) {
           ctx.fill()
         })
       } else if (baseId === 'parrilla') {
-        // fire glow pulse
         const pulse = 0.12 + Math.sin(t * 2.1) * 0.04
         const grd = ctx.createRadialGradient(
           canvas.width * 0.5, canvas.height, 0,
@@ -120,14 +120,10 @@ function SceneAtmosphere({ sceneId }) {
         ctx.fillStyle = grd
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        // embers
         particles.forEach(p => {
           p.y -= p.speed
           p.x += p.drift
-          if (p.y < -10) {
-            p.y = canvas.height + 10
-            p.x = Math.random() * canvas.width
-          }
+          if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width }
           ctx.beginPath()
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
           ctx.fillStyle = p.color
@@ -136,7 +132,6 @@ function SceneAtmosphere({ sceneId }) {
           ctx.globalAlpha = 1
         })
       } else if (baseId === 'taxi') {
-        // bokeh city lights
         const bokeh = [
           { x: 0.15, y: 0.3, r: 40, c: 'rgba(255,200,80,' },
           { x: 0.7,  y: 0.4, r: 30, c: 'rgba(80,180,255,' },
@@ -156,7 +151,6 @@ function SceneAtmosphere({ sceneId }) {
           ctx.fillRect(0, 0, canvas.width, canvas.height)
         })
 
-        // rain
         ctx.strokeStyle = 'rgba(170,210,255,0.25)'
         ctx.lineWidth = 1
         particles.forEach(p => {
@@ -180,7 +174,24 @@ function SceneAtmosphere({ sceneId }) {
   return <canvas ref={canvasRef} className="scene-canvas" />
 }
 
-export default function ConversationScene({ scene, onEnd }) {
+function CinematicIntro({ scene, onEnter }) {
+  return (
+    <div className="cinematic-overlay">
+      <div className="cin-city">BUENOS AIRES</div>
+      <div className="cin-stadium">EL MONUMENTAL</div>
+      <div className="cin-subtitle">{scene.subtitle}</div>
+      <div className="cin-char">
+        <div className="cin-char-name">{scene.character.name}</div>
+        <div className="cin-char-role">{scene.character.role}</div>
+      </div>
+      <button className="cin-enter-btn" onClick={onEnter}>
+        ENTRAR
+      </button>
+    </div>
+  )
+}
+
+export default function ConversationScene({ scene, difficulty, onEnd }) {
   const [started, setStarted] = useState(false)
   const [messages, setMessages] = useState([])
   const [charSpeaking, setCharSpeaking] = useState(false)
@@ -193,7 +204,11 @@ export default function ConversationScene({ scene, onEnd }) {
   const endingRef = useRef(false)
   const messagesEndRef = useRef(null)
 
+  const isMonumental = scene.id.startsWith('monumental')
+  const ambientAudio = useAmbientAudio(scene.id)
   const { listening, startListening, stopListening, error: micError } = useSpeechRecognition()
+
+  const effectivePrompt = scene.systemPrompt + (DIFFICULTY_MODIFIERS[difficulty] || '')
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -205,11 +220,12 @@ export default function ConversationScene({ scene, onEnd }) {
   }, [])
 
   const characterSpeak = useCallback(async (text) => {
-    addMessage('assistant', text)
+    const clean = sanitize(text)
+    addMessage('assistant', clean)
     setCharSpeaking(true)
     setUserTurn(false)
     setStatusText('')
-    await speak(text, scene.character.voiceId, null, () => setCharSpeaking(false), 'es-AR')
+    await speak(clean, scene.character.voiceId, null, () => setCharSpeaking(false), 'es-AR')
   }, [scene, addMessage])
 
   const finishConversation = useCallback(() => {
@@ -217,8 +233,9 @@ export default function ConversationScene({ scene, onEnd }) {
     endingRef.current = true
     stopSpeaking()
     stopListening()
+    ambientAudio.stop()
     onEnd(historyRef.current)
-  }, [onEnd, stopListening])
+  }, [onEnd, stopListening, ambientAudio])
 
   const handleUserSpeech = useCallback(async (text) => {
     if (!text.trim() || endingRef.current) return
@@ -232,7 +249,7 @@ export default function ConversationScene({ scene, onEnd }) {
       const newCount = mistakeCount + 1
       setMistakeCount(newCount)
       if (newCount > SURVIVAL_MISTAKES_ALLOWED) {
-        setStatusText('¡Se rompió la conversación!')
+        setStatusText('Se rompio la conversacion!')
         setTimeout(finishConversation, 2000)
         return
       }
@@ -245,26 +262,27 @@ export default function ConversationScene({ scene, onEnd }) {
 
     setStatusText('Thinking...')
     try {
-      const reply = await getCharacterReply(scene.systemPrompt, historyRef.current)
+      const reply = await getCharacterReply(effectivePrompt, historyRef.current)
       await characterSpeak(reply)
       setUserTurn(true)
       setStatusText('Your turn')
     } catch (e) {
       console.error('Claude error:', e)
-      setStatusText('Connection issue — try again')
+      setStatusText('Connection issue - try again')
       setUserTurn(true)
     }
-  }, [addMessage, mistakeCount, scene, characterSpeak, finishConversation])
+  }, [addMessage, mistakeCount, effectivePrompt, characterSpeak, finishConversation])
 
   const handleStart = async () => {
     setStarted(true)
+    ambientAudio.start()
     await characterSpeak(scene.openingLine)
     setUserTurn(true)
     setStatusText('Your turn')
   }
 
   useEffect(() => {
-    return () => { stopSpeaking(); stopListening() }
+    return () => { stopSpeaking(); stopListening(); ambientAudio.stop() }
   }, [])
 
   const handleMicPress = () => {
@@ -282,13 +300,15 @@ export default function ConversationScene({ scene, onEnd }) {
 
   return (
     <div className="scene" style={{ '--accent': scene.accentColor }}>
-      {/* Layered background */}
       <div className="scene-bg" style={{ background: scene.bgGradient }} />
       <SceneAtmosphere sceneId={scene.id} />
       <div className="scene-vignette" />
 
-      {/* Tap to start */}
-      {!started && (
+      {!started && isMonumental && (
+        <CinematicIntro scene={scene} onEnter={handleStart} />
+      )}
+
+      {!started && !isMonumental && (
         <div className="start-overlay" onClick={handleStart}>
           <div className="start-scene-name">{scene.name}</div>
           <div className="start-location">{scene.subtitle}</div>
@@ -301,9 +321,8 @@ export default function ConversationScene({ scene, onEnd }) {
         </div>
       )}
 
-      {/* Header */}
       <div className="scene-header">
-        <button className="btn-back" onClick={finishConversation}>← Exit</button>
+        <button className="btn-back" onClick={finishConversation}>Exit</button>
         <div className="scene-title-block">
           <span className="scene-char-name">{scene.character.name}</span>
           <span className="scene-location">{scene.subtitle}</span>
@@ -311,12 +330,10 @@ export default function ConversationScene({ scene, onEnd }) {
         <div className="scene-turns">{MAX_TURNS - turnCount.current} turns</div>
       </div>
 
-      {/* Survival */}
       <div className="survival-bar-wrap">
         <div className="survival-bar" style={{ width: `${survivalPct}%`, background: survivalColor }} />
       </div>
 
-      {/* Character stage */}
       <div className="character-stage">
         <div className="char-halo" style={{ background: `radial-gradient(circle, ${scene.accentColor}55 0%, transparent 70%)` }} />
         <div className={`char-figure ${charSpeaking ? 'char-speaking' : ''}`}>
@@ -332,7 +349,6 @@ export default function ConversationScene({ scene, onEnd }) {
         {charSpeaking && <SoundWave color={scene.accentColor} />}
       </div>
 
-      {/* Messages */}
       <div className="messages-wrap">
         <div className="messages">
           {messages.map(m => (
@@ -350,7 +366,6 @@ export default function ConversationScene({ scene, onEnd }) {
         </div>
       </div>
 
-      {/* Controls */}
       <div className="scene-controls">
         <div className="status-text">{micError || statusText}</div>
         <button
@@ -363,7 +378,7 @@ export default function ConversationScene({ scene, onEnd }) {
         </button>
         <div className="controls-row">
           {listening && <button className="btn-secondary" onClick={stopListening}>Done</button>}
-          {userTurn && !listening && <button className="btn-secondary" onClick={finishConversation}>End scene →</button>}
+          {userTurn && !listening && <button className="btn-secondary" onClick={finishConversation}>End scene</button>}
         </div>
       </div>
     </div>

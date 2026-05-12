@@ -77,6 +77,36 @@
   margin-top: 16px;
 }
 
+.difficulty-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.diff-btn {
+  padding: 7px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.55);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.diff-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+}
+
+.diff-btn.diff-active {
+  background: var(--celeste);
+  border-color: var(--celeste);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(117,170,219,0.45);
+}
+
 /* ── Grid ───────────────────────────────────────── */
 .scenes-grid {
   display: flex;

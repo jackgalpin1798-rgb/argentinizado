@@ -12,6 +12,7 @@ export default function App() {
   const [view, setView] = useState(VIEW.SELECT)
   const [activeSceneId, setActiveSceneId] = useState(null)
   const [conversationHistory, setConversationHistory] = useState([])
+  const [difficulty, setDifficulty] = useState('intermediate')
   const { xp, streak, addXP, updateStreak } = useGameStore()
 
   const handleSelectScene = (sceneId) => {
@@ -43,12 +44,13 @@ export default function App() {
       {view === VIEW.SELECT && (
         <>
           <HUD xp={xp} streak={streak} />
-          <SceneSelect xp={xp} streak={streak} onSelect={handleSelectScene} />
+          <SceneSelect xp={xp} streak={streak} onSelect={handleSelectScene} difficulty={difficulty} onDifficulty={setDifficulty} />
         </>
       )}
       {view === VIEW.SCENE && activeScene && (
         <ConversationScene
           scene={activeScene}
+          difficulty={difficulty}
           onEnd={handleSceneEnd}
         />
       )}
