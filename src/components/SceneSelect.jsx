@@ -19,18 +19,20 @@ export default function SceneSelect({ xp, streak, onSelect, difficulty, onDiffic
         <h1 className="hero-title">Argentinizado</h1>
         <p className="hero-sub">Learn Argentine Castellano through real conversations</p>
         <div className="hero-badge">{level.name} · {xp} XP{streak > 0 ? ` · 🔥${streak}` : ''}</div>
-        <div className="difficulty-row">
-          {DIFFICULTIES.map(d => (
-            <button
-              key={d.id}
-              className={`diff-btn ${difficulty === d.id ? 'diff-active' : ''}`}
-              onClick={() => onDifficulty(d.id)}
-              title={d.desc}
-            >
-              {d.label}
-            </button>
-          ))}
-        </div>
+      </div>
+
+      <div className="difficulty-bar">
+        <span className="diff-label">Difficulty</span>
+        {DIFFICULTIES.map(d => (
+          <button
+            key={d.id}
+            className={`diff-btn ${difficulty === d.id ? 'diff-active' : ''}`}
+            onClick={() => onDifficulty(d.id)}
+          >
+            {d.label}
+            <span className="diff-desc">{d.desc}</span>
+          </button>
+        ))}
       </div>
 
       <div className="scenes-grid">

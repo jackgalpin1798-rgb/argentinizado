@@ -3,17 +3,9 @@ import { getCharacterReply } from '../services/claudeService'
 import { speak, stopSpeaking } from '../services/elevenLabsService'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useAmbientAudio } from '../hooks/useAmbientAudio'
-import { FacundoPortrait, MirtraPortrait, RubenPortrait } from './CharacterPortraits'
+import AnimatedCharacter from './AnimatedCharacter'
 import { DIFFICULTY_MODIFIERS } from '../data/scenes'
 import './ConversationScene.css'
-
-const PORTRAITS = {
-  monumental_pregame: FacundoPortrait,
-  monumental_partido: FacundoPortrait,
-  monumental_festejo: FacundoPortrait,
-  parrilla: MirtraPortrait,
-  taxi: RubenPortrait,
-}
 
 const MAX_TURNS = 8
 const SURVIVAL_MISTAKES_ALLOWED = 3
@@ -520,10 +512,7 @@ export default function ConversationScene({ scene, difficulty, onEnd }) {
       <div className="character-stage">
         <div className="char-halo" style={{ background: `radial-gradient(circle, ${scene.accentColor}55 0%, transparent 70%)` }} />
         <div className={`char-figure ${charSpeaking ? 'char-speaking' : ''}`}>
-          {PORTRAITS[scene.id]
-            ? React.createElement(PORTRAITS[scene.id], { speaking: charSpeaking })
-            : <div className="char-emoji">{scene.character.avatar}</div>
-          }
+          <AnimatedCharacter sceneId={scene.id} speaking={charSpeaking} size={190} />
         </div>
         <div className="char-label">
           <span className="char-label-name">{scene.character.name}</span>
